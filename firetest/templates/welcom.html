@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+{% csrf_token %}
+{% if msge %}
+    <div class="w3-panel w3-yellow w3-display-container">
+        <span onclick="this.parentElement.style.display='none'"
+              class="w3-button w3-large w3-display-topright">&times;</span>
+  <p>{{msge}}</p>
+</div>
+
+{% endif %}
+<h1> welcome {{e}} </h1>
+<button type="button" onclick="location.href='{%url 'logout'%}'">Deconnexion</button>
+<h1>Creer une annonce</h1>
+<form action="/welcom/" method="post">
+    {% csrf_token %}
+    Titre:
+    <input type="text" placeholder="name" name="titre">
+    <br>
+    categorie:
+
+            <input type="radio" id="elev" name="cat" value="elevage">
+        <label for="elev">Elevage</label>
+        <input type="radio" id="agri" name="cat" value="agriculture">
+        <label for="agri">agriculture</label><br>
+    <br>
+    descrption:
+   <textarea rows="10" cols="200" name="descp"></textarea>
+     <br>
+    <input type="submit" value="soumettre">
+</form>
+
+<h1>liste d'annonce </h1>
+{%for lis_time,data,work in com_list %}
+ Date:{{data}} &nbsp;
+ titre:{{work.titre}} &nbsp;
+ nom de l'utilisateur:{{work.nom}} &nbsp;
+ <br>
+
+{% endfor %}
+
+</body>
+</html>

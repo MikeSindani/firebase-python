@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <title>Page Title</title>
+</head>
+<body>
+{% if msg %}
+<div class="w3-panel w3-yellow w3-display-container">
+  <span onclick="this.parentElement.style.display='none'"
+  class="w3-button w3-large w3-display-topright">&times;</span>
+  <p>{{msg}}</p>
+</div>
+{% endif %}
+
+<h1>signIn</h1>
+
+<form action="/postsign/" method="post">
+    {% csrf_token %}
+    Email:
+    <input type="email" name="email">
+    Password:
+    <input type="password" name="password">
+    <input type="submit" value="login">
+   <button type="button" onclick="location.href='{%url 'signup'%}'">signup</button>
+</form>
+
+</body>
+</html>

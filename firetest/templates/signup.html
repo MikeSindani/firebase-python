@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+{% if msg %}
+<div class="w3-panel w3-yellow w3-display-container">
+  <span onclick="this.parentElement.style.display='none'"
+  class="w3-button w3-large w3-display-topright">&times;</span>
+  <p>{{msg}}</p>
+</div>
+{% endif %}
+<h1>signUp</h1>
+
+<form action="/postsignup/" method="post">
+    {% csrf_token %}
+    Name:
+    <input type="text" placeholder="name" name="name">
+    Commune:
+    <input type="text" placeholder="avenue" name="av">
+
+    Telephone:
+    <input type="number" placeholder="tel" name="tel">
+    Email:
+    <input type="email" name="email" placeholder="email">
+    Password:
+    <input type="password" name="password" placeholder="password">
+
+    <input type="submit" value="login">
+</form>
+
+
+</body>
+</html>
