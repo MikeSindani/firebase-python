@@ -26,5 +26,5 @@ urlpatterns = [
     path('signup/', views.signup, name="signup"),
     path('postsignup/', views.postsignup, name="postsignup"),
     path('welcom/', views.create_annonce, name="create_annonce"),
-    #path('check/', views.check_annonce, name="check_annonce"),
+    path('post_check/', views.post_check, name="post_check"),
 ]

@@ -17,11 +17,15 @@
 
 <form action="/postsign/" method="post">
     {% csrf_token %}
+     <br>
     Email:
     <input type="email" name="email">
+     <br>
     Password:
     <input type="password" name="password">
+    <br>
     <input type="submit" value="login">
+     <br>
    <button type="button" onclick="location.href='{%url 'signup'%}'">signup</button>
 </form>
 

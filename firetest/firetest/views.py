@@ -30,6 +30,7 @@ def signin(request):
 def postsign(request):
     email = request.POST.get("email")
     passw = request.POST.get("password")
+
     try:
         user = authe.sign_in_with_email_and_password(email, passw)
     except:
@@ -41,26 +42,18 @@ def postsign(request):
     request.session['uid'] = str(session_id)
 
     # intrcution pour recupere l'id dans la session
-    idtoken = request.session['uid']
-    a = authe.get_account_info(idtoken)
-    a = a["users"]
-    print("session 1  = " + str(a))
-    a = a[0]
-    a = a["localId"] # on recupere localId
-    print("session 2  = " + str(a))
+    geta = fonction.AfficherAnnonce()
+    uid = geta.get_token(request, authe)
 
     # intruction pour recuprer le nom d'utilisateur
-    b = database.child("users").child(a).get()
-    b = b[0]
-    b = b.val()
-    nom = b["nom"]
-    tel = b["tel"]
-    print("HUM = " + str(tel))
-    # notre objet ann
-    ann = fonction.AfficherAnnonce()
-    com_list = ann.afficher(database)
 
-    return render(request, "welcom.html", {"com_list": com_list, "e": nom})
+    data = geta.get_profil_data(database = database,uid = uid )
+    print("HUM = " + str(data))
+
+    # notre objet ann
+    com_list = geta.afficher(database)
+
+    return render(request, "welcom.html", {"com_list": com_list, "data":data})
 
 
 def logout(request):
@@ -75,12 +68,19 @@ def signup(request):
 
 # pour se signup
 def postsignup(request):
-
+    #recuperer le form de signUp
     name = request.POST.get("name")
-    tel = request.POST.get("tel")
-    av = request.POST.get("av")
+    prenom = request.POST.get("prenom")
+    entreprise = request.POST.get("entreprise")
+    tel1 = request.POST.get("tel1")
+    tel2 = request.POST.get("tel2")
+    whatsapp = request.POST.get("whatsapp")
+    telegram = request.POST.get("telegram")
+    adr = request.POST.get("adr")
+    imgurl = request.POST.get("url")
     email = request.POST.get("email")
     passw = request.POST.get("password")
+
 
     try:
         user = authe.create_user_with_email_and_password(email, passw)
@@ -89,18 +89,22 @@ def postsignup(request):
         return  render(request, "signup.html", {"msg": message})
 
     uid = user['localId']
-    data = {"nom": name, "tel": tel, "av": av, "statut": "1","uid":uid}
-    database.child("users").child(uid).child("details").set(data)
+    data = {"nom": name,"prenom":prenom ,"entreprise":entreprise,"tel1": tel1,"tel2": tel2,"whatsapp":whatsapp,"telegram":telegram, "adr": adr,"email":email,"imgurl":imgurl, "statut": "1","uid":uid}
+    database.child("utilisateurs").child(uid).child("Informations").set(data)
+
     # intruction pour recuprer le nom d'utilisateur
-    b = database.child("users").child(uid).get()
-    b = b[0]
-    b = b.val()
-    b = b["nom"]
+    nom = database.child("utilisateurs").child(uid).child('Informations').child('nom').get().val()
+    donnee = database.child("utilisateurs").child(uid).child('Informations').get().val()
+    print("nom "+ nom)
+    #tel = database.child("users").child(a).child('details').child('tel').get().val()
+
     message = "utilisateur a ete cree"
     # notre objet ann
     ann = fonction.AfficherAnnonce()
     com_list = ann.afficher(database)
-    return render(request, "welcom.html",  {"com_list": com_list, "msge": message, "e": b})
+    return render(request, "welcom.html",  {"com_list": com_list, "msge": message, "e": nom})
+
+
 
 def create_annonce(request):
 
@@ -110,8 +114,9 @@ def create_annonce(request):
     # la date de la publication
     tz = pytz.timezone('Europe/Berlin')
     time_now = datetime.now(timezone.utc).astimezone(tz)
-    millis = int(time.mktime(time_now.timetuple()))
+    millis = int(time.mktime(time_now.timetuple())) #le temps qu'on a recuperer
 
+    # on recuper les infos du formulaires
     titre = request.POST.get("titre")
     cat = request.POST.get("cat")
     descp = request.POST.get("descp")
@@ -119,21 +124,14 @@ def create_annonce(request):
 
 
     # intrcution pour recupere l'id dans la session
-    idtoken = request.session['uid']
-    a = authe.get_account_info(idtoken)
-    a = a["users"]
-    print("session 1  = " + str(a))
-    a = a[0]
-    a = a["localId"]
-    print("session 2  = "+ str (a))
+    geta = fonction.AfficherAnnonce()
+    a = geta.get_token(request, authe)
 
     # intruction pour recuprer le nom d'utilisateur
-    b = database.child("users").child(a).get()
-    b = b[0]
-    b = b.val()
-    nom = b["nom"]
-    tel = b["tel"]
-    print("HUM =  " + str(b))
+    nom = database.child("users").child(a).child('details').child('nom').get().val()
+    tel = database.child("users").child(a).child('details').child('tel').get().val()
+    print("HUM =  " + str(nom))
+
     #le dictionnaire des donnes a envoyer a firebase
     data = {
         "titre": titre,
@@ -146,7 +144,7 @@ def create_annonce(request):
     }
     #put data in the firedata base
     try:
-        database.child("data").child("annonce").child(millis).set(data)
+            database.child("data").child("annonce").child(millis).set(data)
     except:
         message = "Annonce non publies"
         return render(request, "welcom.html", {"msge": message, "e": nom})
@@ -157,3 +155,35 @@ def create_annonce(request):
     com_list = ann.afficher(database)
     return render(request, "welcom.html", {"com_list": com_list, "msge": message, "e": nom})
 
+
+def post_check(request):
+    import datetime
+    time = request.GET.get('t')
+    # instruction pour recuperer les donnes sur firebase
+    titre = database.child("data").child("annonce").child(time).child('titre').get().val()
+    tel = database.child("data").child("annonce").child(time).child('tel').get().val()
+    cat = database.child("data").child("annonce").child(time).child('categorie').get().val()
+    desc = database.child("data").child("annonce").child(time).child('description').get().val()
+    nomu = database.child("data").child("annonce").child(time).child('nom').get().val()
+    millis = database.child("data").child("annonce").child(time).child('date pub').get().val()
+
+    #recupere la date pour transformer ca en date normal
+    i = float(millis)
+    dat = datetime.datetime.fromtimestamp(i).strftime('%H:%M %d-%m-%Y')
+    # instruction pour recupere les donnes firebase dans un dictionnaire
+    data = {
+        "titre": titre,"categorie": cat,"description": desc, "nom": nomu,"tel": tel, "datepub": dat
+    }
+
+    # intrcution pour recupere l'id dans la session
+    geta = fonction.AfficherAnnonce()
+    a = geta.get_token(request, authe)
+
+    # intruction pour recuprer le nom d'utilisateur
+    nom = database.child("users").child(a).child('details').child('nom').get().val()
+    tel = database.child("users").child(a).child('details').child('tel').get().val()
+    print("HUM =  " + str(nom))
+
+
+
+    return render( request, "description.html", {"data": data, "e": nom} )
