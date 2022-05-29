@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+      #loginBtn {
+        display: none;
+      }
+    </style>
 </head>
 <body>
 {% if msg %}
@@ -52,7 +57,7 @@
     <input type="file" name="files[]" id="files">
     <input type="hidden" name="url" id="url">
     <button type="button" onclick="uploadimage()" >Upload</button><br><br>
-    <input type="submit" value="login">
+    <input type="submit" id="loginBtn" value="login">
 </form>
 
 <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
@@ -95,7 +100,9 @@
           var downloadURL = thisref.snapshot.downloadURL;
           console.log("got url");
           document.getElementById("url").value = downloadURL;
-          alert("file uploaded successfully");
+          console.log("file uploaded successfully");
+          var btnLogin = document.getElementById("loginBtn").style.display="block";
+
         });
 
       }

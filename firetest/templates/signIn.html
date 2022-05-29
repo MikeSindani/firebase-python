@@ -1,9 +1,83 @@
+from tkinter.ttk import Style
+
+
 <!DOCTYPE html>
 <html>
 <head>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <title>Page Title</title>
+    <style>
+      * {box-sizing: border-box}
+
+/* Full-width input fields */
+  input[type=text], input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}
+
+/* Set a style for all buttons */
+button {
+  background-color: #04AA6D;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+
+button:hover {
+  opacity:1;
+}
+
+/* Extra styles for the cancel button */
+.cancelbtn {
+  padding: 14px 20px;
+  background-color: #f44336;
+}
+
+/* Float cancel and signup buttons and add an equal width */
+.cancelbtn, .signupbtn {
+  float: left;
+  width: 50%;
+}
+
+/* Add padding to container elements */
+.container {
+  padding: 16px;
+}
+
+/* Clear floats */
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Change styles for cancel button and signup button on extra small screens */
+@media screen and (max-width: 300px) {
+  .cancelbtn, .signupbtn {
+    width: 100%;
+  }
+}
+    </style>
 </head>
+
 <body>
 {% if msg %}
 <div class="w3-panel w3-yellow w3-display-container">
@@ -15,19 +89,34 @@
 
 <h1>signIn</h1>
 
-<form action="/postsign/" method="post">
+ 
+<form class="modal-content" name="signIn" action="/postsign/" method="post">
+  <div class="container">
     {% csrf_token %}
      <br>
     Email:
     <input type="email" name="email">
      <br>
     Password:
-    <input type="password" name="password">
+    <input type="password" name="password" onkeyup="checkIn()">
     <br>
     <input type="submit" value="login">
      <br>
+     <p id="avertis"></p>
    <button type="button" onclick="location.href='{%url 'signup'%}'">signup</button>
+  </div>
 </form>
+<script>
+  
+   function checkIn() { 
+    var pass = document.forms["signIn"]["password"].value;
+    if(pass.length < 8 ){
+      var text = document.getElementById("avertis").innerHTML="Au moin  8 a plus de caratere "
+    }else{
+      var text = document.getElementById("avertis").innerHTML=""
+    }
+    }
+</script>
 
 </body>
 </html>
