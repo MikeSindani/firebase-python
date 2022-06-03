@@ -23,8 +23,9 @@ database = firebase.database()
 
 
 def signin(request):
-
-    return render(request, "signIn.html")
+    geta = fonction.AfficherAnnonce()
+    com_list = geta.afficher_annonces_publics_alls(database)
+    return render(request, "signIn.html",{"com_list":com_list})
 
 
 def postsign(request):
@@ -47,19 +48,20 @@ def postsign(request):
 
     # intruction pour recuprer le nom d'utilisateur
 
-    data = geta.get_profil_data(database = database,uid = uid )
-    print("HUM = " + str(data))
+    userdata = geta.get_profil_data(database = database,uid = uid )
+    print("HUM = " + str(userdata))
 
     # notre objet ann
-    com_list = geta.afficher(database)
+    com_list = geta.afficher_annonces_profil(database,uid)
 
-    return render(request, "welcom.html", {"com_list": com_list, "data":data})
+    return render(request, "welcom.html", {"com_list": com_list, "data":userdata})
 
 
 def logout(request):
-
     auth.logout(request)
-    return render(request, "signIn.html")
+    geta = fonction.AfficherAnnonce()
+    com_list = geta.afficher_annonces_publics_alls(database)
+    return render(request, "signIn.html",{"com_list":com_list})
 
 # pour se connecter
 def signup(request):
@@ -119,6 +121,9 @@ def create_annonce(request):
     cat = request.POST.get("cat")
     descp = request.POST.get("descp")
     lieu = request.POST.get("lieu")
+    imgurl1 = request.POST.get("imgurl1")
+    imgurl2 = request.POST.get("imgurl2")
+    imgurl3 = request.POST.get("imgurl3")
 
 
     # intrcution pour recupere l'id dans la session
@@ -135,17 +140,24 @@ def create_annonce(request):
         "date pub": millis,
         "lieu": lieu,
         "imgurl1":imgurl1,
+        "imgurl2":imgurl2,
+        "imgurl3":imgurl3,
     }
     #put data in the firedata base
     try:
-            database.child("Annonces").child(millis).set(data)
+        if cat == "Agriculture":
+           database.child("Annonces").child(cat).child(millis).set(data)
+           database.child("utilisateurs").child(uid).child("Annonces").child(cat).child(millis).set(data)
+        if cat == "Elevage":
+            database.child("Annonces").child(cat).child(millis).set(data)
+            database.child("utilisateurs").child(uid).child("Annonces").child(cat).child(millis).set(data)
     except:
         message = "Annonce non publies"
-        return render(request, "welcom.html", {"msge": message, "e": nom})
+        return render(request, "welcom.html", {"msge": message, "data": userdata})
     message = "Annonce  publies"
 
     # notre objet class afficher 
-    com_list = geta.afficher(database)
+    com_list = geta.afficher_annonces_profil(database,uid)
     return render(request, "welcom.html", {"com_list": com_list, "msge": message, "data": userdata})
 
 

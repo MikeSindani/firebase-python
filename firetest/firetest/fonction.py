@@ -2,21 +2,30 @@ import datetime
 from imghdr import what
 
 class AfficherAnnonce:
-     def afficher(self, database):
-        timeshamps = database.child("Annonces").shallow().get().val()
-        if timeshamps:
-            lis_time = []
+     def afficher_annonces_publics_alls(self, database):
+        
+        timeshamps_Agri = database.child("Annonces").child("Agriculture").shallow().get().val()
+        timeshamps_Ele = database.child("Annonces").child("Elevage").shallow().get().val()
 
-            for i in timeshamps:
-                lis_time.append(i)
+        if timeshamps_Agri or timeshamps_Ele:
+            lis_time = []
+            if timeshamps_Agri :
+                for i in timeshamps_Agri:
+                    lis_time.append(i)
+            if timeshamps_Ele :
+                for i in timeshamps_Ele:
+                    lis_time.append(i)
 
             lis_time.sort(reverse=True)
-            work = []
             print("test = " + str(lis_time))
-
+            work = []
             for i in lis_time:
-                wor = database.child("data").child("annonce").child(i).get().val()
-                work.append(wor)
+                worA = database.child("Annonces").child("Agriculture").child(i).get().val()
+                if worA :
+                   work.append(worA)
+                worE = database.child("Annonces").child("Elevage").child(i).get().val()
+                if worE :
+                   work.append(worE)
             print("test2 = " + str(work))
 
             data = []
@@ -27,6 +36,44 @@ class AfficherAnnonce:
                 data.append(dat)
 
             print(data)
+            # on combine le touts
+            com_list = zip(lis_time, data, work)
+            return com_list
+        return False
+     def afficher_annonces_profil(self, database,uid):
+        
+        timeshamps_Agri = database.child("utilisateurs").child(uid).child("Annonces").child("Agriculture").shallow().get().val()
+        timeshamps_Ele = database.child("utilisateurs").child(uid).child("Annonces").child("Elevage").shallow().get().val()
+
+        if timeshamps_Agri or timeshamps_Ele:
+            lis_time = []
+            if timeshamps_Agri :
+                for i in timeshamps_Agri:
+                    lis_time.append(i)
+            if timeshamps_Ele :
+                for i in timeshamps_Ele:
+                    lis_time.append(i)
+
+            lis_time.sort(reverse=True)
+            print("test = " + str(lis_time))
+            work = []
+            for i in lis_time:
+                worA = database.child("utilisateurs").child(uid).child("Annonces").child("Agriculture").child(i).get().val()
+                if worA :
+                   work.append(worA)
+                worE = database.child("utilisateurs").child(uid).child("Annonces").child("Elevage").child(i).get().val()
+                if worE :
+                   work.append(worE)
+            print("test2 = " + str(work))
+
+            data = []
+
+            for i in lis_time:
+                i = float(i)
+                dat = datetime.datetime.fromtimestamp(i).strftime('%H:%M: %d-%m-%Y')
+                data.append(dat)
+
+            print("test3 = "+ str(data))
             # on combine le touts
             com_list = zip(lis_time, data, work)
             return com_list

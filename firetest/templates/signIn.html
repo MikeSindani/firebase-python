@@ -92,7 +92,6 @@ button:hover {
 
 <h1>signIn</h1>
 
- 
 <form class="modal-content" name="signIn" action="/postsign/" method="post">
   <div class="container">
     {% csrf_token %}
@@ -107,6 +106,30 @@ button:hover {
    <button type="button" onclick="location.href='{%url 'signup'%}'">signup</button>
   </div>
 </form>
+
+<h1>liste d'annonce </h1>
+{%if com_list  %}
+  {%for lis_time,data,work in com_list %}
+    {%if work.nom == e  %}
+
+    <div class="w3-card-4">
+        <img src="{{work.imgurl1}}" alt="Alps" height="200" width="200" >
+        <div class="w3-container w3-center">
+        <a href="/post_check/?t={{lis_time}}">
+        Date:{{data}} &nbsp;
+        titre:{{work.titre}} &nbsp;
+        nom de l'utilisateur:{{work.nom}}
+    </a>
+      </div>
+    </div>
+    &nbsp;
+    <br>
+    {%endif %}
+  {% endfor %}
+{%else %}
+  <p>pas d'annonce</p>
+{%endif%}
+
 <script>
   
    function checkIn() { 

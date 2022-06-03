@@ -4,7 +4,56 @@
 <title>Page Title</title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <style>
-     
+              @import url("https://fonts.googleapis.com/css?family=Lato:300");
+        *, *::before, *::after {
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: "Lato";
+          font-size: 16px;
+        }
+
+        /*** <--- CIRCLE STYLES ---> ***/
+
+        .circle {
+          display: none;
+          position: relative;
+          width: 70px;
+          height: 70px;
+          margin: 0.5rem;
+          border-radius: 50%;
+          background: #000000;
+          overflow: hidden;
+        }
+        .circle.per-25 {
+          background-image: conic-gradient(tomato 25%, #000000 0);
+        }
+        .circle.per-50 {
+          background-image: conic-gradient(tomato 50%, #000000 0);
+        }
+        .circle.per-75 {
+          background-image: conic-gradient(tomato 75%, #000000 0);
+        }
+        .circle.per-100 {
+          background-image: conic-gradient(tomato 100%, #000000 0);
+        }
+        .circle .inner {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 50px;
+          height: 50px;
+          background: #fff;
+          border-radius: 50%;
+          font-size: 1em;
+          font-weight: 300;
+          color: rgba(0, 0, 0, 0.75);
+        }
     </style>
 </head>
 <body>
@@ -30,9 +79,9 @@
     <br>
     categorie:
 
-        <input type="radio" id="elev" name="cat" value="elevage">
+        <input type="radio" id="elev" name="cat" value="Elevage">
         <label for="elev">Elevage</label>
-        <input type="radio" id="agri" name="cat" value="agriculture">
+        <input type="radio" id="agri" name="cat" value="Agriculture">
         <label for="agri">agriculture</label><br>
     <br>
     descrption:
@@ -52,7 +101,23 @@
     <input type="hidden" name="imgurl2" id="url2">
     <input type="hidden" name="imgurl3" id="url3">
     <br>
-    <progress id="progress-bar" min="1" max="100" value="20"></progress>
+    <div class="wrap-circles">
+      <div class="circle per-0">
+        <div class="inner">0%</div>
+      </div>
+      <div class="circle per-25">
+        <div class="inner">25%</div>
+      </div>
+      <div class="circle per-50">
+        <div class="inner">50%</div>
+      </div>
+      <div class="circle per-75">
+        <div class="inner">75%</div>
+      </div>
+      <div class="circle per-100">
+        <div class="inner">100%</div>
+      </div>
+    </div>
     <input id="annoncer_btn" type="submit" value="soumettre" disabled>
 </form>
 
@@ -62,7 +127,7 @@
     {%if work.nom == e  %}
 
     <div class="w3-card-4">
-        <img src="img_snowtops.jpg" alt="Alps">
+        <img src="{{work.imgurl1}}" alt="Alps" height="200" width="200" >
         <div class="w3-container w3-center">
         <a href="/post_check/?t={{lis_time}}">
         Date:{{data}} &nbsp;
@@ -98,9 +163,7 @@
       // Get a reference to the storage service, which is used to create references in your storage bucket
 
       function uploadimage(a){
-                var progressBar = document.getElementById ('progress-bar');
-                progressBar.style.display="block";
-                progressBar.value = 0;
+                progressBar(0);
                 if( a==1){
                   var file = document.getElementById("file1").files[0];
                   upimage(file,a);
@@ -113,7 +176,9 @@
                   var file = document.getElementById("file3").files[0];
                   upimage(file,a);
                 }
+
                 function upimage(files,b){
+                  progressBar(25);
                   var file = files; 
                   var B = b;
                   var storage = firebase.storage();
@@ -125,7 +190,7 @@
                   thisref.on('state_changed',function(snapshot){
 
                   console.log("file uplaoded succesfully");
-
+                  progressBar(50);
                   },
                   function(error) {
 
@@ -136,24 +201,30 @@
                   var downloadURL = thisref.snapshot.downloadURL;
                 if( B==1){
                   console.log("got url");
+                  progressBar(75);
                   document.getElementById("url1").value = downloadURL;
                   var url1 = downloadURL;
                   console.log(url1);
                   console.log("file uploaded successfully in firebase img1");
+                  progressBar(100);
                 } 
                 if( B==2){
                   console.log("got url");
+                  progressBar(75);
                    document.getElementById("url2").value = downloadURL;
                    var url2 = downloadURL;
                    console.log(url2);
                   console.log("file uploaded successfully in firebase img2");
+                  progressBar(100);
                 } 
                 if( B==3){
                   console.log("got url");
+                  progressBar(75);
                   document.getElementById("url3").value = downloadURL;
                   var url3 = downloadURL;
                   console.log(url3);
                   console.log("file uploaded successfully in firebase img3");
+                  progressBar(100);
                 } 
                 if(url1 != "" &&  url2 !="" && url3 !=""){
                   document.getElementById("annoncer_btn").disabled= false;
@@ -165,6 +236,28 @@
             });
          }
                 
+    }
+    function  progressBar(value){
+      if(value == 0){
+      document.querySelector(".circle").style.display="none";
+      document.querySelector(".per-0").style.display="block";
+      }
+      if(value == 25){
+        document.querySelector(".per-0").style.display="none";
+        document.querySelector(".per-25").style.display="block";
+      }
+      if(value == 50){
+       document.querySelector(".per-25").style.display="none";
+       document.querySelector(".per-50").style.display="block";
+      }
+      if(value == 75){
+        document.querySelector(".per-50").style.display="none";
+        document.querySelector(".per-75").style.display="block";
+      }
+      if(value == 100){
+        document.querySelector(".per-75").style.display="none";
+        document.querySelector(".per-100").style.display="block";
+      }
     }
 </script>
 </html>
