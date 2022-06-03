@@ -5,9 +5,39 @@
     <title>Title</title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <style>
-      #loginBtn {
+      .item{
+        font-size: 40px;
+        font-weight: bold;
+        color: rgb(184, 184, 184);
+        margin: 10px;
+        cursor: pointer;
+      }
+      .part{
         display: none;
       }
+      .isactived{
+        display: block;
+        color: black;
+        animation-duration: 0.5s;
+        animation-name: slidein;
+      }
+      
+      .step {
+        display: flex;
+        align-items: center;
+      }
+      @keyframes slidein {
+      from {
+        opacity:0.2 ;
+        margin-left: 12%;
+      }
+      to {
+        opacity:1;
+        margin-left: 10%;
+      }
+    }
+      
+     
     </style>
 </head>
 <body>
@@ -20,44 +50,68 @@
 {% endif %}
 <h1>signUp</h1>
 
-<form action="/postsignup/" method="post">
+<div class="step">
+  <div class="item item1 isactived" id="item2">1</div>
+  <div class="item item2" id="item2" >2</div>
+  <div class="item item3" id="item3">3</div>
+</div>
+<form action="/postsignup/" method="post" name="myForm">
     {% csrf_token %}
-    <br>
-    Nom:
-    <input type="text" placeholder="name" name="name">
-    <br>
-    Prenom:
-    <input type="text" placeholder="Prenom" name="prenom">
-    <br>
-    adresse:
-    <input type="text" placeholder="avenue" name="adr">
-    <br>
-    Nom Entreprise:
-    <input type="text" placeholder="nom Entreprise" name="entreprise">
-    <br>
-    Telephone 1:
-    <input type="number" placeholder="numero phone 1" name="tel1">
-    <br>
-    Telephone 2:
-    <input type="number" placeholder="numero phone 2" name="tel2">
-    <br>
-    whastapp Num:
-    <input type="number" placeholder="tel" name="whatsapp">
-    <br>
-    Telegram Adress:
-    <input type="number" placeholder="ex:@clam" name="telegram">
-    <br>
-    Email:
-    <input type="email" name="email" placeholder="email" required>
-    <br>
-    Password:
-    <input type="password" name="password" placeholder="password" required>
-    <br>
-   profil Image:
-    <input type="file" name="files[]" id="files">
-    <input type="hidden" name="url" id="url">
-    <button type="button" onclick="uploadimage()" >Upload</button><br><br>
-    <input type="submit" id="loginBtn" value="login">
+    <div class="part pass isactived">
+          <h2 class="text">Entre mot de passe et utilisateur</h2>
+          Email:
+          <input type="email" name="email" placeholder="email" required>
+          <br>
+          Password:
+          <input type="password" name="password" placeholder="password" required onkeyup="check();">
+          <input type="password" name="confirm_password" placeholder="confirm password" required onkeyup="check();">
+          <br>
+          <button id="suivant_part_pass" type="button" disabled  onclick="Suivant(1);">suivant</button>
+    </div>
+
+    <div class="part personnel_info">
+      <h2 class="text">Information Personnel</h2>
+      Nom:
+          <input type="text" placeholder="name" name="name">
+          <br>
+          Prenom:
+          <input type="text" placeholder="Prenom" name="prenom">
+          <br>
+          adresse:
+          <input type="text" placeholder="avenue" name="adr">
+          <br>
+          Nom Entreprise:
+          <input type="text" placeholder="nom Entreprise" name="entreprise">
+          <br>
+          Telephone 1:
+          <input type="number" placeholder="numero phone 1" name="tel1">
+          <br>
+          Telephone 2:
+          <input type="number" placeholder="numero phone 2" name="tel2">
+          <br>
+          whastapp Num:
+          <input type="number" placeholder="tel" name="whatsapp">
+          <br>
+          Telegram Adress:
+          <input type="number" placeholder="ex:@clam" name="telegram">
+          <br>
+     <button type="button" onclick="Precedent(2);">precedent</button>
+     <button type="button" onclick="Suivant(2);">suivant</button>
+    </div>
+
+    <div class="part profil_info">
+      <h2 class="text">Photo de profil</h2>
+      profil Image:
+      <input type="file" name="files[]" id="files">
+      <input type="hidden" name="url" id="url">
+      
+      <button type="button" onclick="uploadimage()" >Upload</button><br><br>
+      <button type="button" onclick="Precedent(3);">precedent</button>
+      <input type="submit" id="loginBtn" value="login" disabled>
+    </div>
+    <p id="message"></p>
+    
+  
 </form>
 
 <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
@@ -78,17 +132,18 @@
       // Get a reference to the storage service, which is used to create references in your storage bucket
 
           function uploadimage(){
+
               var storage = firebase.storage();
 
               var file = document.getElementById("files").files[0];
 
               var storageRef = storage.ref();
 
-              var thisref = storageRef.child(file.name).put(file);
+              var thisref = storageRef.child("profils").child(file.name).put(file);
 
-              thisref.on('state_changed',function(snapshot){
+          thisref.on('state_changed',function(snapshot){
 
-              console.log("file uplaoded succesfully");
+          console.log("file uplaoded succesfully");
 
           },
           function(error) {
@@ -101,11 +156,77 @@
           console.log("got url");
           document.getElementById("url").value = downloadURL;
           console.log("file uploaded successfully");
-          var btnLogin = document.getElementById("loginBtn").style.display="block";
+          var btnLogin = document.getElementById("loginBtn").disabled = false;
 
         });
-
       }
+       // get the number step 
+       var item1 = document.querySelector(".item1");
+        var item2 = document.querySelector(".item2");
+        var item3 = document.getElementById("item3");
+        // get the div step button
+        var part_pass = document.querySelector(".pass");
+        var part_personnel = document.querySelector(".personnel_info"); 
+        var profil_info = document.querySelector(".profil_info");   
+        // create function top change de step 
+        function Suivant(a){
+            if(a == 1){
+              item1.classList.add("isactived");
+              part_pass.classList.remove("isactived");
+              item2.classList.add("isactived");
+              part_personnel.classList.add("isactived");
+            }
+            if(a == 2){
+              item1.classList.add("isactived");
+              item2.classList.add("isactived");
+              part_personnel.classList.remove("isactived");
+              item3.classList.add("isactived");
+              profil_info.classList.add("isactived");
+            }
+      }
+      function Precedent(a){
+            if(a == 2){
+              item2.classList.remove("isactived");
+              part_personnel.classList.remove("isactived");
+              item1.classList.add("isactived");
+              part_pass.classList.add("isactived");
+            }
+            if(a == 3){
+              item3.classList.remove("isactived");
+              profil_info.classList.remove("isactived");
+              item1.classList.add("isactived");
+              item2.classList.add("isactived");
+              part_personnel.classList.add("isactived");
+             
+            }
+      }
+   
+    function check(){
+       // get the value for form password 
+        var password = document.forms["myForm"]["password"].value;
+        var confirmpassword = document.forms["myForm"]["confirm_password"].value;
+        var email = document.forms["myForm"]["email"].value;
+        var suivant_part_pass = document.getElementById("suivant_part_pass");
+  
+        if(email != '' && password !='' && confirmpassword != ''){
+          if(password.length < 8){
+              var message = document.getElementById("message").innerHTML="Mot de passe doit etre superieur a 8.";
+              }else{
+                  var message = document.getElementById("message").innerHTML="";
+                  if(password == confirmpassword){
+                      var message = document.getElementById("message").innerHTML="Ca conrepondre";
+                      suivant_part_pass.disabled = false;
+                  }else{
+                      var message = document.getElementById("message").innerHTML="doit correspond";
+                      suivant_part_pass.disabled = true;
+                  }
+            }
+            
+      }
+    
+    }
+    
+        
 </script>
 </body>
 </html>

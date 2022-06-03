@@ -91,18 +91,16 @@ def postsignup(request):
     uid = user['localId']
     data = {"nom": name,"prenom":prenom ,"entreprise":entreprise,"tel1": tel1,"tel2": tel2,"whatsapp":whatsapp,"telegram":telegram, "adr": adr,"email":email,"imgurl":imgurl, "statut": "1","uid":uid}
     database.child("utilisateurs").child(uid).child("Informations").set(data)
-
+    
     # intruction pour recuprer le nom d'utilisateur
-    nom = database.child("utilisateurs").child(uid).child('Informations').child('nom').get().val()
-    donnee = database.child("utilisateurs").child(uid).child('Informations').get().val()
-    print("nom "+ nom)
-    #tel = database.child("users").child(a).child('details').child('tel').get().val()
-
+    geta = fonction.AfficherAnnonce()
+    data = geta.get_profil_data(database = database,uid = uid )
+    print("HUM = " + str(data))
     message = "utilisateur a ete cree"
     # notre objet ann
     ann = fonction.AfficherAnnonce()
     com_list = ann.afficher(database)
-    return render(request, "welcom.html",  {"com_list": com_list, "msge": message, "e": nom})
+    return render(request, "welcom.html",  {"com_list": com_list, "msge": message, "data": data})
 
 
 
@@ -125,35 +123,30 @@ def create_annonce(request):
 
     # intrcution pour recupere l'id dans la session
     geta = fonction.AfficherAnnonce()
-    a = geta.get_token(request, authe)
-
-    # intruction pour recuprer le nom d'utilisateur
-    nom = database.child("users").child(a).child('details').child('nom').get().val()
-    tel = database.child("users").child(a).child('details').child('tel').get().val()
-    print("HUM =  " + str(nom))
+    uid = geta.get_token(request, authe)
+    userdata = geta.get_profil_data(database,uid)
 
     #le dictionnaire des donnes a envoyer a firebase
     data = {
         "titre": titre,
         "categorie": cat,
         "description": descp,
-        "nom": nom,
-        "tel": tel,
+        "uid":uid,
         "date pub": millis,
         "lieu": lieu,
+        "imgurl1":imgurl1,
     }
     #put data in the firedata base
     try:
-            database.child("data").child("annonce").child(millis).set(data)
+            database.child("Annonces").child(millis).set(data)
     except:
         message = "Annonce non publies"
         return render(request, "welcom.html", {"msge": message, "e": nom})
     message = "Annonce  publies"
 
-    # notre objet ann
-    ann = fonction.AfficherAnnonce()
-    com_list = ann.afficher(database)
-    return render(request, "welcom.html", {"com_list": com_list, "msge": message, "e": nom})
+    # notre objet class afficher 
+    com_list = geta.afficher(database)
+    return render(request, "welcom.html", {"com_list": com_list, "msge": message, "data": userdata})
 
 
 def post_check(request):
