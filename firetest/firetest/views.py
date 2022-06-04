@@ -52,7 +52,7 @@ def postsign(request):
     print("HUM = " + str(userdata))
 
     # notre objet ann
-    com_list = geta.afficher_annonces_profil(database,uid)
+    com_list = geta.afficher_annonces_alls(database)
 
     return render(request, "welcom.html", {"com_list": com_list, "data":userdata})
 
@@ -101,7 +101,7 @@ def postsignup(request):
     message = "utilisateur a ete cree"
     # notre objet ann
     ann = fonction.AfficherAnnonce()
-    com_list = ann.afficher(database)
+    com_list = ann.afficher_annonces_alls(database)
     return render(request, "welcom.html",  {"com_list": com_list, "msge": message, "data": data})
 
 
@@ -121,6 +121,7 @@ def create_annonce(request):
     cat = request.POST.get("cat")
     descp = request.POST.get("descp")
     lieu = request.POST.get("lieu")
+    quatite = request.POST.get("quatite")
     imgurl1 = request.POST.get("imgurl1")
     imgurl2 = request.POST.get("imgurl2")
     imgurl3 = request.POST.get("imgurl3")
@@ -145,19 +146,21 @@ def create_annonce(request):
     }
     #put data in the firedata base
     try:
-        if cat == "Agriculture":
-           database.child("Annonces").child(cat).child(millis).set(data)
-           database.child("utilisateurs").child(uid).child("Annonces").child(cat).child(millis).set(data)
-        if cat == "Elevage":
-            database.child("Annonces").child(cat).child(millis).set(data)
-            database.child("utilisateurs").child(uid).child("Annonces").child(cat).child(millis).set(data)
+        database.child("annonces").child(millis).set(data)
+        database.child("utilisateurs").child(uid).child("annonces").child(millis).set(data)
+        if cat == "agriculture":
+           database.child("categories").child(cat).child(millis).set(data)
+           database.child("utilisateurs").child(uid).child("categories").child(millis).set(data)
+        if cat == "elevage":
+           database.child("categories").child(cat).child(millis).set(data)
+           database.child("utilisateurs").child(uid).child("categories").child(cat).child(millis).set(data)
     except:
         message = "Annonce non publies"
         return render(request, "welcom.html", {"msge": message, "data": userdata})
     message = "Annonce  publies"
 
     # notre objet class afficher 
-    com_list = geta.afficher_annonces_profil(database,uid)
+    com_list = geta.afficher_annonces_alls(database)
     return render(request, "welcom.html", {"com_list": com_list, "msge": message, "data": userdata})
 
 

@@ -74,22 +74,20 @@
 
 <form action="/welcom/" method="post">
     {% csrf_token %}
-    Titre:
+
     <input type="text" placeholder="name" name="titre">
     <br>
-    categorie:
-
-        <input type="radio" id="elev" name="cat" value="Elevage">
+        <input type="radio" id="elev" name="cat" value="elevage">
         <label for="elev">Elevage</label>
-        <input type="radio" id="agri" name="cat" value="Agriculture">
+        <input type="radio" id="agri" name="cat" value="agriculture">
         <label for="agri">agriculture</label><br>
     <br>
-    descrption:
-   <textarea rows="10" cols="50" name="descp"></textarea>
+    <input type="number" placeholder="Quatite" name="quatite">
+    <br>
+     <textarea rows="4" cols="50" name="descp"></textarea>
      <br>
-    Image:
     <input type="file" name="files[]" id="file1">
-    <button type="button" onclick="uploadimage(1)">Uplaod</button> 
+    <button type="button" onclick="uploadimage(1)" >Uplaod</button> 
     <br>
     <input type="file" name="files[]" id="file2">
     <button type="button" onclick="uploadimage(2)">Uplaod</button> 
@@ -214,7 +212,7 @@
                    document.getElementById("url2").value = downloadURL;
                    var url2 = downloadURL;
                    console.log(url2);
-                  console.log("file uploaded successfully in firebase img2");
+                   console.log("file uploaded successfully in firebase img2");
                   progressBar(100);
                 } 
                 if( B==3){
@@ -237,7 +235,7 @@
          }
                 
     }
-    function  progressBar(value){
+      function  progressBar(value){
       if(value == 0){
       document.querySelector(".circle").style.display="none";
       document.querySelector(".per-0").style.display="block";
